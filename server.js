@@ -91,7 +91,7 @@ function createTableUsers(){
 }
 createTableUsers();
 //insert into users
-function insertUsers(user_name,password,email,address){
+/*function insertUsers(user_name,password,email,address){
     let user={user_name:user_name,password:password,email:email,address:address};
     let sql='INSERT INTO  users set ?';
     let query=connection.query(sql,user,(err,result)=>{
@@ -100,7 +100,7 @@ function insertUsers(user_name,password,email,address){
         return result.insertId;
     });
    
-}
+}*/
 //insertUsers("ahmed","456","ahmed@gmail","smoha");
 //select single user
 function selectUser(id){
@@ -215,7 +215,13 @@ app.get("/sign_up",function(req,res){
 });
 //to save data from sign up page
 app.post("/sign_up",function(req,res){
-   req.session._id= insertUsers(req.body.username,req.body.password,req.body.email,req.body.address);
+    let user={user_name:req.body.username,password:req.body.password,email:req.body.email,address:req.body.address};
+    let sql='INSERT INTO  users set ?';
+    let query=connection.query(sql,user,(err,result)=>{
+        if(err) throw err;
+        console.log(result);
+        req.session._id= result.insertId;
+        console.log(req.session._id);
     req.session.loggedin = true;
     req.session.username = req.body.username;
     req.session.address=req.body.address;
@@ -224,6 +230,10 @@ app.post("/sign_up",function(req,res){
    
     res.redirect("/");
 
+    });
+   
+  // req.session._id= insertUsers(req.body.username,req.body.password,req.body.email,req.body.address);
+   
    
 });
 //to show sign_in page
@@ -293,6 +303,7 @@ app.get("/edituser",function(req,res,next){
    
 });
 app.put("/edituser/:user_id",function(req,res){
+    console.log(req.session._id);
     updateUser(req.body.username,req.body.address,req.body.email,req.session._id);
     req.session.loggedin = true;
     req.session.username =req.body.username;
